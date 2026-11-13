@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MoonGlass</string>
+    <string name="widget_desc">Liquid-glass moon phase bar</string>
+</resources>
