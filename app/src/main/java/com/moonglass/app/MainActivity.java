@@ -47,6 +47,14 @@ public class MainActivity extends Activity {
         root.addView(text(MoonMath.NAMES[idx], 28, Color.WHITE));
         root.addView(text(String.format(Locale.US, "%.0f%% illuminated  •  day %.1f of 29.5",
                 MoonMath.illumination(age) * 100, age), 15, 0xFFB8C4E6));
+        ImageView prev = new ImageView(this);
+        prev.setImageBitmap(GlassRenderer.render(340, 76,
+                getResources().getDisplayMetrics().density, age));
+        LinearLayout.LayoutParams plp = new LinearLayout.LayoutParams(dp(340), dp(76));
+        plp.topMargin = dp(16);
+        plp.bottomMargin = dp(16);
+        root.addView(prev, plp);
+
         root.addView(text("Add the widget: long-press your home screen → Widgets → MoonGlass (4×1).",
                 13, 0xFF8895BC));
 

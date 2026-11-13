@@ -6,16 +6,19 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.widget.RemoteViews;
 
 public class MoonWidgetProvider extends AppWidgetProvider {
 
-    private static final int[] SLOTS = {R.id.m0, R.id.m1, R.id.m2, R.id.m3, R.id.m4};
-
     @Override
     public void onUpdate(Context ctx, AppWidgetManager mgr, int[] ids) {
-        for (int id : ids) mgr.updateAppWidget(id, build(ctx));
+        for (int id : ids) mgr.updateAppWidget(id, build(ctx, mgr, id));
+    }
+
+    @Override
+    public void onAppWidgetOptionsChanged(Context ctx, AppWidgetManager mgr, int id, Bundle opts) {
+        mgr.updateAppWidget(id, build(ctx, mgr, id));
     }
 
     @Override
@@ -30,22 +33,19 @@ public class MoonWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    static RemoteViews build(Context ctx) {
+    static RemoteViews build(Context ctx, AppWidgetManager mgr, int id) {
         RemoteViews rv = new RemoteViews(ctx.getPackageName(), R.layout.widget_moon);
-        double age = MoonMath.ageDays(System.currentTimeMillis());
-        int idx = MoonMath.phaseIndex(age);
 
-        for (int k = -2; k <= 2; k++) {
-            int phase = ((idx + k) % 8 + 8) % 8;
-            boolean current = (k == 0);
-            // centre moon = true current phase; neighbours = canonical phases
-            float frac = current ? (float) (age / MoonMath.SYNODIC) : phase / 8f;
-            Bitmap bmp = MoonMath.moon(frac, current ? 160 : 112);
-            int slot = SLOTS[k + 2];
-            rv.setImageViewBitmap(slot, bmp);
-            rv.setInt(slot, "setImageAlpha", current ? 255 : 100);
-            rv.setContentDescription(slot, MoonMath.NAMES[phase]);
-        }
+        Bundle o = mgr.getAppWidgetOptions(id);
+        float w = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0);
+        float h = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0);
+        if (w < 100) w = 320;
+        if (h < 40) h = 72;
+
+        double age = MoonMath.ageDays(System.currentTimeMillis());
+        float density = ctx.getResources().getDisplayMetrics().density;
+        rv.setImageViewBitmap(R.id.bg, GlassRenderer.render(w, h, density, age));
+        rv.setContentDescription(R.id.bg, MoonMath.NAMES[MoonMath.phaseIndex(age)]);
 
         PendingIntent pi = PendingIntent.getActivity(ctx, 0,
                 new Intent(ctx, MainActivity.class),
