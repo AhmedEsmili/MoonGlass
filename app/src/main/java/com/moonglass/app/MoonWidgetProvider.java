@@ -22,7 +22,7 @@ public class MoonWidgetProvider extends AppWidgetProvider {
     public void onReceive(Context ctx, Intent intent) {
         super.onReceive(ctx, intent);
         String a = intent.getAction();
-        if (Intent.ACTION_DATE_CHANGED.equals(a) || Intent.ACTION_TIME_SET.equals(a)
+        if (Intent.ACTION_DATE_CHANGED.equals(a) || Intent.ACTION_TIME_CHANGED.equals(a)
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(a)) {
             AppWidgetManager mgr = AppWidgetManager.getInstance(ctx);
             int[] ids = mgr.getAppWidgetIds(new ComponentName(ctx, MoonWidgetProvider.class));
